@@ -1,5 +1,6 @@
-import 'package:finfresh_test/controller/bloc/todo_bloc.dart';
-import 'package:finfresh_test/view/splash_screen.dart';
+import 'package:finfresh_test/controller/local_storage/local_storage_bloc.dart';
+import 'package:finfresh_test/controller/todo/todo_bloc.dart';
+import 'package:finfresh_test/view/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,6 +15,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => TodoBloc()),
+        BlocProvider(create: (context) => LocalStorageBloc()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
@@ -21,7 +23,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: const SplashScreen(),
+        home: const HomeScreen(),
         debugShowCheckedModeBanner: false,
       ),
     );

@@ -1,4 +1,4 @@
-import 'package:finfresh_test/controller/bloc/todo_bloc.dart';
+import 'package:finfresh_test/controller/todo/todo_bloc.dart';
 import 'package:finfresh_test/model/user_data.dart';
 import 'package:finfresh_test/resources/components/button_widget.dart';
 import 'package:finfresh_test/resources/components/textfield.dart';

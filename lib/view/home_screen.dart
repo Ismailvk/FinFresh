@@ -1,8 +1,12 @@
-import 'package:finfresh_test/controller/bloc/todo_bloc.dart';
+import 'dart:async';
+import 'package:finfresh_test/controller/todo/todo_bloc.dart';
+import 'package:finfresh_test/resources/components/alert_dialog.dart';
+import 'package:finfresh_test/utils/notifications.dart';
 import 'package:finfresh_test/view/add_screen.dart';
 import 'package:finfresh_test/view/edit_scree.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,9 +16,28 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool isOnline = false;
+  StreamSubscription? isOnlineConnected;
+  Notificationservices notification = Notificationservices();
+
   @override
   void initState() {
-    context.read<TodoBloc>().add(FetchDataSuccessEvent());
+    notification.initializationNotifications();
+    isOnlineConnected = InternetConnection().onStatusChange.listen((event) {
+      switch (event) {
+        case InternetStatus.connected:
+          setState(() => isOnline = true);
+          dataCheck(context);
+          break;
+        case InternetStatus.disconnected:
+          setState(() => isOnline = false);
+          dataCheck(context);
+          break;
+        default:
+          setState(() => isOnline = false);
+          break;
+      }
+    });
     super.initState();
   }
 
@@ -67,31 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   showDialog(
                                     context: context,
                                     builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: const Text('Delete Student'),
-                                        content: const Text(
-                                            'Are you sure you want to delete'),
-                                        actions: <Widget>[
-                                          TextButton(
-                                            child: const Text('Cancel'),
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                            },
-                                          ),
-                                          TextButton(
-                                            child: const Text('Delete'),
-                                            onPressed: () {
-                                              context.read<TodoBloc>().add(
-                                                  DeleteTodoSuccessEvent(
-                                                      id: data.id!));
-                                              context
-                                                  .read<TodoBloc>()
-                                                  .add(FetchDataSuccessEvent());
-                                              Navigator.of(context).pop();
-                                            },
-                                          ),
-                                        ],
-                                      );
+                                      return alertdialog(context, data.id!);
                                     },
                                   );
                                 }
@@ -130,5 +129,14 @@ class _HomeScreenState extends State<HomeScreen> {
           },
           label: const Text('Add Studnet')),
     );
+  }
+
+  dataCheck(BuildContext context) {
+    if (isOnline) {
+      notification.sendNotification('Online', 'You are online');
+      context.read<TodoBloc>().add(FetchDataSuccessEvent());
+    } else {
+      notification.sendNotification('Network Error', 'You are offline');
+    }
   }
 }
