@@ -25,6 +25,8 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     final response = await http.post(uri, body: body, headers: header);
     if (response.statusCode == 201) {
       emit(AddTodoSuccessMessageState());
+    } else {
+      // emit()
     }
   }
 
@@ -37,11 +39,9 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     if (response.statusCode == 200) {
       final body = jsonDecode(response.body)['items'] as List;
       todoListData = body.map((e) => TodoModel.fromJson(e)).toList();
-      if (todoListData.isEmpty) {
-        emit(ErrorFetchDataState());
-      } else {
-        emit(DataFetchSuccessState(todoList: todoListData));
-      }
+      emit(DataFetchSuccessState(todoList: todoListData));
+    } else {
+      emit(ErrorFetchDataState());
     }
   }
 
