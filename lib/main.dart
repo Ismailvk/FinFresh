@@ -1,10 +1,14 @@
 import 'package:finfresh_test/controller/local_storage/local_storage_bloc.dart';
+import 'package:finfresh_test/controller/profile/profile_bloc.dart';
 import 'package:finfresh_test/controller/todo/todo_bloc.dart';
+import 'package:finfresh_test/data/shared_preference/shared_preference.dart';
 import 'package:finfresh_test/view/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SharedPref.instance.initStorage();
   runApp(const MyApp());
 }
 
@@ -16,6 +20,7 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => TodoBloc(LocalStorageBloc())),
         BlocProvider(create: (context) => LocalStorageBloc()),
+        BlocProvider(create: (context) => ProfileBloc()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
