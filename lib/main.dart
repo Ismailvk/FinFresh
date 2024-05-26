@@ -1,5 +1,6 @@
 import 'package:finfresh_test/controller/local_storage/local_storage_bloc.dart';
 import 'package:finfresh_test/controller/profile/profile_bloc.dart';
+import 'package:finfresh_test/controller/theme/theme_bloc.dart';
 import 'package:finfresh_test/controller/todo/todo_bloc.dart';
 import 'package:finfresh_test/data/shared_preference/shared_preference.dart';
 import 'package:finfresh_test/view/home_screen.dart';
@@ -21,15 +22,19 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => TodoBloc(LocalStorageBloc())),
         BlocProvider(create: (context) => LocalStorageBloc()),
         BlocProvider(create: (context) => ProfileBloc()),
+        BlocProvider(create: (context) => ThemeBloc()),
       ],
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
-        home: const HomeScreen(),
-        debugShowCheckedModeBanner: false,
+      child: BlocBuilder<ThemeBloc, ThemeMode>(
+        builder: (context, state) {
+          return MaterialApp(
+            title: 'Flutter Demo',
+            theme: ThemeData.light(),
+            darkTheme: ThemeData.dark(),
+            themeMode: state,
+            home: const HomeScreen(),
+            debugShowCheckedModeBanner: false,
+          );
+        },
       ),
     );
   }

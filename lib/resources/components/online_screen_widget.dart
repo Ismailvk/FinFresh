@@ -33,7 +33,6 @@ class OnlineScreenWidget extends StatelessWidget {
                     return Padding(
                       padding: const EdgeInsets.all(5),
                       child: Card(
-                        color: const Color.fromARGB(255, 224, 222, 222),
                         child: ListTile(
                           leading: CircleAvatar(
                             backgroundColor: Colors.black,

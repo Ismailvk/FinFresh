@@ -1,6 +1,6 @@
 import 'dart:io';
-
 import 'package:finfresh_test/controller/profile/profile_bloc.dart';
+import 'package:finfresh_test/controller/theme/theme_bloc.dart';
 import 'package:finfresh_test/resources/components/button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,6 +24,23 @@ void bottomSheet(BuildContext context) {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Column(
+                      children: [
+                        Switch(
+                          value:
+                              context.read<ThemeBloc>().state == ThemeMode.dark,
+                          onChanged: (value) {
+                            context.read<ThemeBloc>().add(ThemeChanged(value));
+                          },
+                        ),
+                        const Text('Light / Dark')
+                      ],
+                    ),
+                  ],
+                ),
                 BlocBuilder<ProfileBloc, ProfileState>(
                   builder: (context, state) {
                     if (state is ProfileImagePickState) {
