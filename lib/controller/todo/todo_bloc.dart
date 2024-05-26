@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:bloc/bloc.dart';
+import 'package:finfresh_test/controller/local_storage/local_storage_bloc.dart';
 import 'package:finfresh_test/data/ntwork/api_urls.dart';
 import 'package:finfresh_test/model/user_data.dart';
 import 'package:http/http.dart' as http;
@@ -8,13 +9,31 @@ part 'todo_event.dart';
 part 'todo_state.dart';
 
 class TodoBloc extends Bloc<TodoEvent, TodoState> {
-  TodoBloc() : super(TodoInitial()) {
+  final LocalStorageBloc localStorageBloc;
+
+  TodoBloc(this.localStorageBloc) : super(TodoInitial()) {
     on<AddTodoSuccessEvent>(addTodoEvent);
     on<FetchDataSuccessEvent>(fetchTodoData);
     on<DeleteTodoSuccessEvent>(deleteTodo);
     on<UpdateTodoSuccessEvent>(updateTodoEvent);
   }
   final header = {'Content-Type': 'application/json'};
+  FutureOr<void> fetchTodoData(
+      FetchDataSuccessEvent event, Emitter<TodoState> emit) async {
+    emit(LoadingFetchState());
+
+    final uri = Uri.parse(ApiUrls.fetchData);
+    final response = await http.get(uri);
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body)['items'] as List;
+      List<TodoModel> todoListData =
+          body.map((e) => TodoModel.fromJson(e)).toList();
+      localStorageBloc.add(StoreDataToDatabas(todoList: todoListData));
+      emit(DataFetchSuccessState(todoList: todoListData));
+    } else {
+      emit(ErrorFetchDataState());
+    }
+  }
 
   FutureOr<void> addTodoEvent(
       AddTodoSuccessEvent event, Emitter<TodoState> emit) async {
@@ -27,21 +46,6 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       emit(AddTodoSuccessMessageState());
     } else {
       // emit()
-    }
-  }
-
-  FutureOr<void> fetchTodoData(
-      FetchDataSuccessEvent event, Emitter<TodoState> emit) async {
-    emit(LoadingFetchState());
-    List<TodoModel> todoListData = [];
-    final uri = Uri.parse(ApiUrls.fetchData);
-    final response = await http.get(uri);
-    if (response.statusCode == 200) {
-      final body = jsonDecode(response.body)['items'] as List;
-      todoListData = body.map((e) => TodoModel.fromJson(e)).toList();
-      emit(DataFetchSuccessState(todoList: todoListData));
-    } else {
-      emit(ErrorFetchDataState());
     }
   }
 

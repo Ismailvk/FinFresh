@@ -6,8 +6,6 @@ final class LocalStorageInitial extends LocalStorageState {}
 
 final class LocaStorageDataLoadingState extends LocalStorageState {}
 
-final class LocaStorageDataSuccessState extends LocalStorageState {}
-
 final class LocaStorageDataFailedState extends LocalStorageState {}
 
 final class GetLocalStorageDataSuccessState extends LocalStorageState {

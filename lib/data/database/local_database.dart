@@ -18,7 +18,6 @@ class DatabaseHelper {
   }
 
   Future<Database> _initDB(String filePath) async {
-    print('in Database');
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
@@ -38,15 +37,36 @@ class DatabaseHelper {
     ''');
   }
 
+  Future<bool> todoExists(String id) async {
+    final db = await instance.database;
+    final result = await db.query(
+      'todos',
+      columns: ['_id'],
+      where: '_id = ?',
+      whereArgs: [id],
+      limit: 1,
+    );
+
+    return result.isNotEmpty;
+  }
+
   Future<void> insertTodos(List<TodoModel> todos) async {
-    print('starting to add');
     final db = await instance.database;
     final batch = db.batch();
 
-    for (var todo in todos) {
-      batch.insert('todos', TodoModel.toJson(todo));
-    }
+    for (TodoModel todo in todos) {
+      if (!await todoExists(todo.id!)) {
+        batch.insert('todos', TodoModel.toJson(todo));
+        print('todo id ${todo.id}');
+      }
 
-    await batch.commit(noResult: true);
+      await batch.commit(noResult: true);
+    }
+  }
+
+  Future<List<TodoModel>> getAllTodos() async {
+    final db = await instance.database;
+    final result = await db.query('todos');
+    return result.map((json) => TodoModel.fromJson(json)).toList();
   }
 }

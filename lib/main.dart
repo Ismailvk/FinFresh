@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => TodoBloc()),
+        BlocProvider(create: (context) => TodoBloc(LocalStorageBloc())),
         BlocProvider(create: (context) => LocalStorageBloc()),
       ],
       child: MaterialApp(
