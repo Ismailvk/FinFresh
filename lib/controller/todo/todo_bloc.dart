@@ -4,6 +4,8 @@ import 'package:bloc/bloc.dart';
 import 'package:finfresh_test/controller/local_storage/local_storage_bloc.dart';
 import 'package:finfresh_test/data/ntwork/api_urls.dart';
 import 'package:finfresh_test/model/user_data.dart';
+import 'package:finfresh_test/view/home_screen.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 part 'todo_event.dart';
 part 'todo_state.dart';
@@ -43,6 +45,9 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     final body = jsonEncode(data);
     final response = await http.post(uri, body: body, headers: header);
     if (response.statusCode == 201) {
+      Navigator.of(event.context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+          (route) => false);
       emit(AddTodoSuccessMessageState());
     } else {
       // emit()

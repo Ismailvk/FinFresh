@@ -7,11 +7,9 @@ import 'package:finfresh_test/resources/components/circle_widget.dart';
 import 'package:finfresh_test/resources/components/offline_screen_widget.dart';
 import 'package:finfresh_test/resources/components/online_screen_widget.dart';
 import 'package:finfresh_test/utils/notifications.dart';
-import 'package:finfresh_test/view/add_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
-import 'package:local_auth/local_auth.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,46 +23,26 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isOnline = false;
   StreamSubscription? isOnlineConnected;
   Notificationservices notification = Notificationservices();
-  final LocalAuthentication auth = LocalAuthentication();
-  bool isAuthenticated = false;
 
   @override
   void initState() {
     super.initState();
-    _authenticate();
-  }
-
-  Future<void> _authenticate() async {
-    bool canAuthenticateWithBiometrics = await auth.canCheckBiometrics;
-    if (canAuthenticateWithBiometrics) {
-      try {
-        final bool didAuthenticate = await auth.authenticate(
-          localizedReason: 'Please authenticate to show Bank balance',
-          options: const AuthenticationOptions(biometricOnly: false),
-        );
-        if (didAuthenticate) {
-          notification.initializationNotifications();
-          isOnlineConnected =
-              InternetConnection().onStatusChange.listen((event) {
-            switch (event) {
-              case InternetStatus.connected:
-                setState(() => isOnline = true);
-                dataCheck(context);
-                break;
-              case InternetStatus.disconnected:
-                setState(() => isOnline = false);
-                dataCheck(context);
-                break;
-              default:
-                setState(() => isOnline = false);
-                break;
-            }
-          });
-        }
-      } catch (e) {
-        print(e);
+    notification.initializationNotifications();
+    isOnlineConnected = InternetConnection().onStatusChange.listen((event) {
+      switch (event) {
+        case InternetStatus.connected:
+          setState(() => isOnline = true);
+          dataCheck(context);
+          break;
+        case InternetStatus.disconnected:
+          setState(() => isOnline = false);
+          dataCheck(context);
+          break;
+        default:
+          setState(() => isOnline = false);
+          break;
       }
-    }
+    });
   }
 
   @override
@@ -98,15 +76,16 @@ class _HomeScreenState extends State<HomeScreen> {
         body:
             isOnline ? const OnlineScreenWidget() : const OfflineScreenWidget(),
         floatingActionButton: isOnline
-            ? FloatingActionButton.extended(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => AddStudentScreen(),
-                    ),
-                  );
-                },
-                label: const Text('Add Studnet'))
+            ? const SizedBox.shrink()
+            // FloatingActionButton.extended(
+            //     onPressed: () {
+            //       Navigator.of(context).push(
+            //         MaterialPageRoute(
+            //           builder: (context) => AddStudentScreen(),
+            //         ),
+            //       );
+            //     },
+            //     label: const Text('Add Studnet'))
             : const SizedBox.shrink());
   }
 
@@ -117,8 +96,9 @@ class _HomeScreenState extends State<HomeScreen> {
       context.read<ProfileBloc>().add(FetchProfileData());
     } else {
       notification.sendNotification('Network Error', 'You are offline');
-      context.read<LocalStorageBloc>().add(GetDataFromDatabase());
       context.read<ProfileBloc>().add(FetchProfileData());
+
+      context.read<LocalStorageBloc>().add(GetDataFromDatabase());
     }
   }
 }

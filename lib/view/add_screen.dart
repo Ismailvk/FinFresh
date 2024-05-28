@@ -54,7 +54,9 @@ class AddStudentScreen extends StatelessWidget {
       final description = descriptionController.text;
       TodoModel todoObj = TodoModel(title: title, description: description);
 
-      context.read<TodoBloc>().add(AddTodoSuccessEvent(todoObj: todoObj));
+      context
+          .read<TodoBloc>()
+          .add(AddTodoSuccessEvent(todoObj: todoObj, context: context));
       context.read<TodoBloc>().add(FetchDataSuccessEvent());
     }
   }

@@ -6,7 +6,8 @@ class FetchDataSuccessEvent extends TodoEvent {}
 
 class AddTodoSuccessEvent extends TodoEvent {
   final TodoModel todoObj;
-  AddTodoSuccessEvent({required this.todoObj});
+  final BuildContext context;
+  AddTodoSuccessEvent({required this.todoObj, required this.context});
 }
 
 class UpdateTodoSuccessEvent extends TodoEvent {

@@ -3,7 +3,7 @@ import 'package:finfresh_test/controller/profile/profile_bloc.dart';
 import 'package:finfresh_test/controller/theme/theme_bloc.dart';
 import 'package:finfresh_test/controller/todo/todo_bloc.dart';
 import 'package:finfresh_test/data/shared_preference/shared_preference.dart';
-import 'package:finfresh_test/view/home_screen.dart';
+import 'package:finfresh_test/view/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
             theme: ThemeData.light(),
             darkTheme: ThemeData.dark(),
             themeMode: state,
-            home: const HomeScreen(),
+            home: const ScreenSplash(),
             debugShowCheckedModeBanner: false,
           );
         },
